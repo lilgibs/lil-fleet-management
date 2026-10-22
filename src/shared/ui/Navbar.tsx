@@ -1,24 +1,23 @@
-import logo from "../../assets/logo.png"
 import Container from "./Container"
 
-// Satu halaman saja, jadi tidak ada link menu: hanya identitas + sumber data
 export default function Navbar() {
     return (
-        <header className="sticky top-0 z-10 border-b border-slate-200 bg-white">
-            <Container plain className="flex items-center justify-between gap-3 py-2">
+        <header className="sticky top-0 z-10 grid h-16 items-center border-b border-slate-200 bg-white shadow-sm sm:h-18">
+            <Container plain className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-                    <img src={logo} alt="Lil Gib" width={40} height={40} className="size-10 shrink-0" />
-                    <span className="truncate font-semibold">Manajemen Armada</span>
+                    <img src="/logo.png" alt="Lil Gib" width={40} height={40} className="size-10 shrink-0" />
+                    <span className="truncate font-semibold">Fleet Management</span>
                 </div>
-                <a
-                    href="https://api-v3.mbta.com/docs/swagger/index.html"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-11 shrink-0 items-center text-sm text-slate-600 underline-offset-4 hover:text-accent hover:underline"
-                >
-                    <span className="hidden sm:inline">Sumber data:&nbsp;</span>MBTA<span className="hidden sm:inline">&nbsp;V3</span>&nbsp;API
-                    <span className="sr-only"> (membuka tab baru)</span>
-                </a>
+                {/* profil masih mockup, belum ada autentikasi */}
+                <div className="flex shrink-0 items-center gap-3">
+                    <div className="sr-only text-right sm:not-sr-only">
+                        <p className="text-sm leading-tight font-semibold">Operator</p>
+                        <p className="text-xs text-slate-500">Pusat Kendali</p>
+                    </div>
+                    <span aria-hidden className="grid size-10 place-items-center rounded-full bg-accent-soft text-sm font-bold text-accent">
+                        OP
+                    </span>
+                </div>
             </Container>
         </header>
     )

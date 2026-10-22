@@ -19,11 +19,10 @@ type Props = {
     onLoadMore: () => void
     onRetry: () => void
     emptyText: string
-    // diisi = dropdown nonaktif, teksnya menjelaskan kenapa
+    // kalau diisi, dropdown dinonaktifkan dan teks ini yang ditampilkan
     disabledHint?: string
 }
 
-// Dropdown multi-select dengan lazy load: halaman berikutnya diambil saat ujung daftar terlihat
 export default function InfiniteMultiSelect({
     label, icon, open, onOpenChange, options, selected, onChange,
     isPending, error, hasNextPage, isFetchingNextPage, onLoadMore, onRetry, emptyText, disabledHint,
@@ -34,7 +33,6 @@ export default function InfiniteMultiSelect({
     const listRef = useRef<HTMLUListElement>(null)
     const sentinelRef = useRef<HTMLLIElement>(null)
 
-    // Tutup saat klik di luar atau Escape (fokus kembali ke tombol)
     useEffect(() => {
         if (!open) return
         const onPointerDown = (e: PointerEvent) => {
@@ -53,7 +51,7 @@ export default function InfiniteMultiSelect({
         }
     }, [open, onOpenChange])
 
-    // Ujung daftar terlihat: ambil halaman berikutnya. Berhenti saat error supaya tidak mengulang terus
+    // jangan observe saat error, kalau tidak request gagal akan diulang terus
     useEffect(() => {
         const sentinel = sentinelRef.current
         if (!open || !hasNextPage || isFetchingNextPage || error || !sentinel) return
@@ -74,23 +72,25 @@ export default function InfiniteMultiSelect({
         : selected.length ? `${label} (${selected.length})` : `Semua ${label.toLowerCase()}`
 
     return (
-        <div ref={rootRef} className="relative w-full sm:w-72">
+        <div ref={rootRef} className="relative w-full min-w-0">
+            <p id={`${listId}-label`} className="mb-2 text-xs font-medium text-slate-600">{label}</p>
             <button
                 ref={triggerRef}
                 type="button"
                 disabled={disabled}
                 aria-expanded={open}
                 aria-controls={listId}
+                aria-labelledby={`${listId}-label ${listId}-value`}
                 onClick={() => onOpenChange(!open)}
-                className="flex min-h-11 w-full items-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-left text-sm hover:border-slate-400 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500"
+                className="flex min-h-11 w-full items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-3 text-left text-sm transition-colors hover:border-slate-400 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100/70 disabled:text-slate-500 motion-reduce:transition-none"
             >
                 <span className="shrink-0 text-slate-500">{icon}</span>
-                <span className="min-w-0 flex-1 truncate">{summary}</span>
+                <span id={`${listId}-value`} className="min-w-0 flex-1 truncate">{summary}</span>
                 <ChevronDown aria-hidden className={`size-4 shrink-0 text-slate-500 ${open ? "rotate-180" : ""}`} />
             </button>
 
             {open && (
-                <div className="absolute inset-x-0 z-20 mt-1 rounded-md border border-slate-200 bg-white shadow-lg">
+                <div className="absolute inset-x-0 z-20 mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg">
                     {selected.length > 0 && (
                         <div className="flex items-center justify-between border-b border-slate-200 px-3 text-sm">
                             <span className="text-slate-600">{selected.length} dipilih</span>
@@ -114,7 +114,6 @@ export default function InfiniteMultiSelect({
                                         onChange={() => toggle(option.value)}
                                         className="size-4 shrink-0 accent-accent"
                                     />
-                                    {/* Panel selebar tombol: nama panjang turun baris, bukan dipotong */}
                                     <span className="min-w-0 flex-1">{option.label}</span>
                                     {option.hint && <span className="max-w-24 shrink-0 truncate text-xs text-slate-500">{option.hint}</span>}
                                 </label>

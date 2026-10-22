@@ -13,7 +13,7 @@ type Props = {
 }
 
 export default function VehicleFilter({ routes, trips, onRoutesChange, onTripsChange }: Props) {
-    // Satu dropdown terbuka sekaligus. Data baru diambil saat dropdown dibuka (hemat rate limit 20/menit)
+    // data baru di-fetch saat dropdown dibuka, supaya tidak boros rate limit
     const [open, setOpen] = useState<'route' | 'trip' | null>(null)
     const routeQuery = useGetRoutes({ enabled: open === 'route' })
     const tripQuery = useGetTrips(routes, { enabled: open === 'trip' })
@@ -30,7 +30,7 @@ export default function VehicleFilter({ routes, trips, onRoutesChange, onTripsCh
     })) ?? []
 
     return (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <section aria-label="Filter kendaraan" className="grid items-end gap-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
             <InfiniteMultiSelect
                 label="Rute"
                 icon={<RouteIcon aria-hidden className="size-4" />}
@@ -62,13 +62,13 @@ export default function VehicleFilter({ routes, trips, onRoutesChange, onTripsCh
                 onLoadMore={tripQuery.fetchNextPage}
                 onRetry={() => (tripQuery.data ? tripQuery.fetchNextPage() : tripQuery.refetch())}
                 emptyText="Tidak ada trip untuk rute ini."
-                disabledHint={routes.length ? undefined : "Pilih rute dulu"}
+                disabledHint={routes.length ? undefined : "Pilih rute dahulu"}
             />
-            {routes.length > 0 && (
-                <Button variant="ghost" onClick={() => onRoutesChange([])} className="self-start sm:self-auto">
-                    <X aria-hidden className="size-4" /> Reset filter
-                </Button>
-            )}
-        </div>
+            <Button variant="ghost" disabled={routes.length === 0 && trips.length === 0}
+                onClick={() => { setOpen(null); onRoutesChange([]) }}
+                className="w-fit gap-1.5 text-xs disabled:no-underline sm:col-span-2 lg:col-span-1">
+                <X aria-hidden className="size-3.5" /> Hapus filter
+            </Button>
+        </section>
     )
 }
