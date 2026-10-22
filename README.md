@@ -2,6 +2,8 @@
 
 Aplikasi frontend untuk memantau armada kendaraan secara real-time, memakai data publik [MBTA V3 API](https://api-v3.mbta.com/docs/swagger/index.html) (transportasi umum Boston).
 
+**Demo:** [lil-fleet-management.vercel.app](https://lil-fleet-management.vercel.app)
+
 ## Fitur
 
 - **Daftar kendaraan** dalam bentuk card: label, status, nama pemberhentian, tujuan dan nomor trip, latitude/longitude, dan waktu update terakhir.
