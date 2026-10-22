@@ -1,14 +1,17 @@
 import type { UseQueryResult } from "@tanstack/react-query"
-import { useState } from "react"
+import { LoaderCircle } from "lucide-react"
+import { lazy, Suspense, useState } from "react"
 import type { Route } from "../../../entities/route/model/route.types"
 import type { Stop } from "../../../entities/stop/model/stop.types"
 import type { Trip } from "../../../entities/trip/model/trip.types"
 import type { Vehicle } from "../../../entities/vehicle/model/vehicle.types"
 import VehicleCard from "../../../entities/vehicle/ui/VehicleCard"
 import VehicleCardSkeleton from "../../../entities/vehicle/ui/VehicleCardSkeleton"
-import VehicleDetailModal from "../../../entities/vehicle/ui/VehicleDetailModal"
 import type { IApiResponseProps } from "../../../shared/api/types"
 import Button from "../../../shared/ui/Button"
+
+// popup (termasuk Leaflet) dipisah ke chunk sendiri, baru diunduh saat pertama kali dibuka
+const VehicleDetailModal = lazy(() => import("../../../entities/vehicle/ui/VehicleDetailModal"))
 
 // grid-cols-1 (minmax(0, 1fr)) supaya teks panjang tidak melebarkan kolom
 const GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
@@ -76,7 +79,17 @@ export default function VehicleList({ query, routeById, stopById, tripById, skel
                     </li>
                 ))}
             </ul>
-            {selected && <VehicleDetailModal vehicle={selected.vehicle} route={selected.route} onClose={() => setSelected(null)} />}
+            {selected && (
+                <Suspense fallback={
+                    <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45">
+                        <p className="flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm shadow-lg">
+                            <LoaderCircle aria-hidden className="size-4 motion-safe:animate-spin" /> Memuat detail armada…
+                        </p>
+                    </div>
+                }>
+                    <VehicleDetailModal vehicle={selected.vehicle} route={selected.route} onClose={() => setSelected(null)} />
+                </Suspense>
+            )}
         </>
     )
 }

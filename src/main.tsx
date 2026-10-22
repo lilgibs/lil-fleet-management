@@ -8,7 +8,7 @@ import Navbar from './shared/ui/Navbar.tsx'
 
 // MBTA tanpa API key cuma 20 request/menit
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
+  defaultOptions: { queries: { retry: 1, staleTime: 30_000, refetchOnWindowFocus: false } },
 })
 
 createRoot(document.getElementById('root')!).render(
