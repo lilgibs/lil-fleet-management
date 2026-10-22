@@ -1,11 +1,9 @@
 
 export interface IApiRequestProps {
-  page?: number;
-  limit?: number;
-  q?: string;
-  sort?: string;
-  order?: string;
-  date?: string;
+  'page[offset]'?: number;
+  'page[limit]'?: number;
+  sort?: "-";
+  orderBy?: string;
 }
 
 export type IApiMetaPagination = {
@@ -18,26 +16,12 @@ export type IApiMetaPagination = {
   prevPage: number | null;
 }
 
-export type ApiErrorKind = 'http' | 'network' | 'timeout' | 'cancelled' | 'unknown'
-
-export type ApiError = {
-  name?: string
-  code?: string
-  message?: string
-  status?: number
-  kind?: ApiErrorKind
-  traceId?: string
-  retryable?: boolean
-  details?: unknown
-}
-
-export type NormalizedApiError = ApiError & {
-  name: string
-  message: string
-  kind: ApiErrorKind
-  retryable: boolean
-}
-
 export interface IApiResponseProps<T> {
   data: T;
+  links: {
+    first: string
+    last: string
+    next: string
+    prev: string
+  }
 }
