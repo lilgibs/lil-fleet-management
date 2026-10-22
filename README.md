@@ -4,9 +4,9 @@ Aplikasi frontend untuk memantau armada kendaraan secara real-time, memakai data
 
 ## Fitur
 
-- **Daftar kendaraan** dalam bentuk card: label, status, nama pemberhentian, tujuan perjalanan, latitude/longitude, dan waktu update terakhir.
+- **Daftar kendaraan** dalam bentuk card: label, status, nama pemberhentian, tujuan dan nomor trip, latitude/longitude, dan waktu update terakhir.
 - **Pagination**: rentang data yang tampil, pilihan 6/12/24 per halaman, jumlah halaman, dan tombol pindah halaman.
-- **Filter Rute dan Trip**: dropdown multi-pilih dengan infinite scroll. Daftar trip mengikuti rute yang dipilih.
+- **Filter Rute dan Trip**: dropdown multi-pilih dengan infinite scroll. Daftar trip hanya berisi trip yang sedang berjalan pada rute yang dipilih.
 - **Popup detail**: data rute, trip (tujuan, arah, akses kursi roda), pemberhentian terkait, dan posisi kendaraan di peta (Leaflet + OpenStreetMap).
 - **Loading dan error** di halaman, dropdown, dan popup: skeleton saat memuat, pesan error berbahasa Indonesia dengan tombol "Coba lagi".
 - Tombol **Perbarui** untuk mengambil ulang posisi kendaraan.
@@ -57,7 +57,7 @@ src/
 ├─ entities/                       # satu folder per resource API
 │  ├─ vehicle/                     # api, tipe, useGetVehicles, useGetVehicle, card, popup detail
 │  ├─ route/                       # api, tipe, useGetRoutes (infinite)
-│  ├─ trip/                        # api, tipe, useGetTrips (infinite)
+│  ├─ trip/                        # api, tipe, useGetTrips (infinite, trip aktif dari /vehicles)
 │  └─ stop/                        # tipe
 └─ shared/
    ├─ api/                         # instance axios, pesan error, tipe JSON:API, getOffset
@@ -78,7 +78,7 @@ Alur data halaman: `Fleet` (UI) → `useFleetViewModel` → `useGetVehicles` (Re
   - `include=route,trip,stop` di daftar kendaraan: rute (nama, warna, jenis), tujuan perjalanan, dan nama pemberhentian sesuai status armada ikut di respons yang sama.
   - `include=route,trip,stop` di popup detail: satu request untuk semua data detail.
   - `fields[...]` hanya meminta atribut yang dipakai.
-- Data dropdown baru diambil saat dropdown dibuka. Daftar rute dan trip di-cache selama sesi.
+- Data dropdown baru diambil saat dropdown dibuka. Daftar rute di-cache selama sesi, daftar trip aktif mengikuti cache 30 detik.
 
 ## Pagination
 
@@ -91,7 +91,7 @@ Pagination dilakukan di server dengan `page[offset]` dan `page[limit]`. MBTA tid
 
 ## Perilaku API yang perlu diketahui
 
-- `/trips` wajib punya filter, jadi dropdown Trip baru aktif setelah rute dipilih.
+- `/trips` berisi semua trip terjadwal (rute Red sekitar 2000 trip, yang beroperasi sekitar 20), jadi opsi Trip diambil dari `/vehicles?filter[route]=…&include=trip` agar hanya berisi trip yang sedang berjalan. Karena itu dropdown Trip baru aktif setelah rute dipilih.
 - Jika `filter[trip]` dikirim, API mengabaikan `filter[route]`. View model hanya mengirim salah satu (trip bila ada).
 - Beberapa ID dikirim sebagai string dipisah koma (`Red,Orange`), bukan array, karena axios mengirim array sebagai `filter[route][]`.
 - Data MBTA berisi bus, subway, light rail, kereta komuter, dan ferry. Ikon card mengikuti jenis kendaraan.

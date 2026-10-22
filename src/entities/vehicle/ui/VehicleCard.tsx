@@ -22,6 +22,7 @@ export default function VehicleCard({ vehicle, route, stop, trip, onSelect }: Pr
     const status = getVehicleStatus(current_status)
     const routeId = vehicle.relationships.route.data?.id
     const destination = trip?.attributes.headsign?.trim()
+    const tripNumber = trip?.attributes.name || trip?.id
     const stopName = stop?.attributes.name?.trim()
     const routeName = route?.attributes.long_name || route?.attributes.short_name || (routeId ? `Rute ${routeId}` : "Rute belum tersedia")
 
@@ -53,7 +54,10 @@ export default function VehicleCard({ vehicle, route, stop, trip, onSelect }: Pr
             <div className="mt-4 flex min-h-28 items-start gap-3 rounded-lg bg-slate-50 p-3">
                 <RouteBadge route={route} />
                 <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-medium text-slate-500">Rute</p>
+                    <div className="flex items-baseline justify-between gap-2 text-[11px] text-slate-500">
+                        <p className="font-medium">Rute</p>
+                        {tripNumber && <p title={`Trip ${tripNumber}`} className="min-w-0 truncate tabular-nums">Trip {tripNumber}</p>}
+                    </div>
                     <p title={routeName} className="mt-0.5 line-clamp-2 text-sm leading-5 font-semibold wrap-anywhere">{routeName}</p>
                     <p title={destination} className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600 wrap-anywhere">
                         <span className="font-medium text-accent">Tujuan </span>{destination || "belum tersedia"}

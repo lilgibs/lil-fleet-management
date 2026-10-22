@@ -14,7 +14,7 @@ const LIMIT_OPTIONS = [6, 12, 24]
 const CARD_FIELDS = {
     'fields[vehicle]': 'label,current_status,latitude,longitude,updated_at',
     'fields[route]': 'short_name,long_name,color,text_color,type',
-    'fields[trip]': 'headsign',
+    'fields[trip]': 'headsign,name',
     'fields[stop]': 'name',
 }
 

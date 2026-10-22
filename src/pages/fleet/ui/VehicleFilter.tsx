@@ -23,7 +23,7 @@ export default function VehicleFilter({ routes, trips, onRoutesChange, onTripsCh
         label: route.attributes.long_name || route.attributes.short_name,
         hint: route.attributes.short_name,
     })) ?? []
-    const tripOptions = tripQuery.data?.pages.flatMap((page) => page.data).map((trip) => ({
+    const tripOptions = tripQuery.data?.map((trip) => ({
         value: trip.id,
         label: trip.attributes.headsign,
         hint: trip.attributes.name || trip.id,
@@ -48,7 +48,7 @@ export default function VehicleFilter({ routes, trips, onRoutesChange, onTripsCh
                 emptyText="Tidak ada rute."
             />
             <InfiniteMultiSelect
-                label="Trip"
+                label="Trip aktif"
                 icon={<Navigation aria-hidden className="size-4" />}
                 open={open === 'trip'}
                 onOpenChange={(isOpen) => setOpen(isOpen ? 'trip' : null)}
@@ -61,7 +61,7 @@ export default function VehicleFilter({ routes, trips, onRoutesChange, onTripsCh
                 isFetchingNextPage={tripQuery.isFetchingNextPage}
                 onLoadMore={tripQuery.fetchNextPage}
                 onRetry={() => (tripQuery.data ? tripQuery.fetchNextPage() : tripQuery.refetch())}
-                emptyText="Tidak ada trip untuk rute ini."
+                emptyText="Tidak ada trip aktif untuk rute ini."
                 disabledHint={routes.length ? undefined : "Pilih rute dahulu"}
             />
             <Button variant="ghost" disabled={routes.length === 0 && trips.length === 0}
