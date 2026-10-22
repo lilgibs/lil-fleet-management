@@ -39,14 +39,21 @@ export default function Fleet() {
                 <div className="mt-6">
                     <div className="mb-4 min-h-5">
                         {vehicles.isSuccess && !vehicles.isPlaceholderData ? (
-                            <p role="status" aria-atomic="true" aria-busy={vehicles.isFetching} className="text-sm text-slate-500">
-                                Menampilkan <span className="font-semibold text-slate-900 tabular-nums">
-                                    {vehicles.data.data.length === 0 ? '0' : `${pagination.from.toLocaleString('id-ID')}–${pagination.to.toLocaleString('id-ID')}`}
-                                </span>
-                                {vehicles.data.data.length > 0 && pagination.total !== undefined && (
-                                    <> dari <span className="font-semibold text-slate-900 tabular-nums">{pagination.total.toLocaleString('id-ID')}</span></>
-                                )} armada
-                            </p>
+                            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-sm text-slate-500">
+                                <p role="status" aria-atomic="true" aria-busy={vehicles.isFetching}>
+                                    Menampilkan <span className="font-semibold text-slate-900 tabular-nums">
+                                        {vehicles.data.data.length === 0 ? '0' : `${pagination.from.toLocaleString('id-ID')}–${pagination.to.toLocaleString('id-ID')}`}
+                                    </span>
+                                    {vehicles.data.data.length > 0 && pagination.total !== undefined && (
+                                        <> dari <span className="font-semibold text-slate-900 tabular-nums">{pagination.total.toLocaleString('id-ID')}</span></>
+                                    )} armada
+                                </p>
+                                {vehicles.data.data.length > 0 && pagination.totalPages !== undefined && (
+                                    <p>
+                                        Halaman <span className="font-semibold text-slate-900 tabular-nums">{pagination.page.toLocaleString('id-ID')}</span> dari <span className="font-semibold text-slate-900 tabular-nums">{pagination.totalPages.toLocaleString('id-ID')}</span>
+                                    </p>
+                                )}
+                            </div>
                         ) : vehicles.isPending || vehicles.isFetching ? (
                             <div aria-hidden className="h-5 w-56 max-w-full rounded bg-slate-100 motion-safe:animate-pulse" />
                         ) : null}
