@@ -1,27 +1,22 @@
 
-export interface IApiRequestProps {
+export interface IApiRequestProps<F extends string = string> {
   'page[offset]'?: number;
   'page[limit]'?: number;
-  sort?: "-";
-  orderBy?: string;
+  // ascending: "bearing", descending: "-bearing"
+  sort?: F | `-${F}`;
+  // contoh: "route,trip,stop"
+  include?: string;
 }
 
-export type IApiMetaPagination = {
-  page: number;
-  limit: number;
-  totalPages: number;
-  displayedRows: number;
-  totalRows: number;
-  nextPage: number | null;
-  prevPage: number | null;
-}
-
-export interface IApiResponseProps<T> {
+// I = tipe resource di `included` (hasil param include)
+export interface IApiResponseProps<T, I = never> {
   data: T;
-  links: {
-    first: string
-    last: string
-    next: string
-    prev: string
+  included?: I[];
+  // prev/next tidak ada di halaman pertama/terakhir
+  links?: {
+    first?: string
+    last?: string
+    next?: string
+    prev?: string
   }
 }

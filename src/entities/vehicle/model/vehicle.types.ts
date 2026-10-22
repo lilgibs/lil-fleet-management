@@ -1,3 +1,5 @@
+import type { IApiRequestProps } from "../../../shared/api/types"
+
 export interface Vehicle {
     attributes: {
         bearing: number | null
@@ -41,5 +43,10 @@ export interface Vehicle {
             }
         }
     }
-    type: string
+    type: 'vehicle'
+}
+
+export type VehicleParams = IApiRequestProps<keyof Vehicle['attributes']> & {
+    'filter[route]'?: string
+    'filter[trip]'?: string
 }
