@@ -1,12 +1,22 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
-import { ROUTE_FIELDS, type Route } from "../../../entities/route/model/route.types";
+import type { Route } from "../../../entities/route/model/route.types";
+import type { Stop } from "../../../entities/stop/model/stop.types";
+import type { Trip } from "../../../entities/trip/model/trip.types";
 import { useGetVehicles } from "../../../entities/vehicle/model/use.get.vehicles";
 import { getOffset } from "../../../shared/api";
 import { useDebouncedValue } from "../../../shared/lib/useDebouncedValue";
 
 // kelipatan 3, mengikuti grid 3 kolom
 const LIMIT_OPTIONS = [6, 12, 24]
+
+// hanya atribut yang ditampilkan card; data lengkap diambil oleh popup detail
+const CARD_FIELDS = {
+    'fields[vehicle]': 'label,current_status,latitude,longitude,updated_at',
+    'fields[route]': 'short_name,long_name,color,text_color,type',
+    'fields[trip]': 'headsign',
+    'fields[stop]': 'name',
+}
 
 type FleetForm = {
     page: number
@@ -47,14 +57,17 @@ export default function useFleetViewModel() {
         : { 'filter[route]': routeIds || undefined }
     const offset = (page - 1) * limit
 
-    const params = { ...filter, 'page[limit]': limit, include: 'route', 'fields[route]': ROUTE_FIELDS }
+    const params = { ...filter, 'page[limit]': limit, include: 'route,trip,stop', ...CARD_FIELDS }
     // data sebelumnya dipertahankan hanya saat pindah halaman, bukan saat filter/limit berubah
     const withoutOffset = (key: unknown) => JSON.stringify({ ...(key as object), 'page[offset]': undefined })
     const vehicles = useGetVehicles({ ...params, 'page[offset]': offset }, {
         placeholderData: (previous, previousQuery) =>
             withoutOffset(previousQuery?.queryKey[1]) === withoutOffset(params) ? previous : undefined,
     })
-    const routeById = new Map<string, Route>(vehicles.data?.included?.map((route) => [route.id, route]))
+    const included = vehicles.data?.included ?? []
+    const routeById = new Map(included.filter((item): item is Route => item.type === 'route').map((route) => [route.id, route]))
+    const stopById = new Map(included.filter((item): item is Stop => item.type === 'stop').map((stop) => [stop.id, stop]))
+    const tripById = new Map(included.filter((item): item is Trip => item.type === 'trip').map((trip) => [trip.id, trip]))
 
     // MBTA tidak mengirim total, jadi dihitung dari halaman terakhir (links.last).
     // Respons kosong tidak punya links, anggap halaman ini yang terakhir
@@ -67,6 +80,8 @@ export default function useFleetViewModel() {
     return {
         vehicles,
         routeById,
+        stopById,
+        tripById,
         filters: { routes, trips },
         setRoutes,
         setTrips,

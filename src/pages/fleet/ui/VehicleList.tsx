@@ -1,6 +1,8 @@
 import type { UseQueryResult } from "@tanstack/react-query"
 import { useState } from "react"
 import type { Route } from "../../../entities/route/model/route.types"
+import type { Stop } from "../../../entities/stop/model/stop.types"
+import type { Trip } from "../../../entities/trip/model/trip.types"
 import type { Vehicle } from "../../../entities/vehicle/model/vehicle.types"
 import VehicleCard from "../../../entities/vehicle/ui/VehicleCard"
 import VehicleCardSkeleton from "../../../entities/vehicle/ui/VehicleCardSkeleton"
@@ -12,14 +14,16 @@ import Button from "../../../shared/ui/Button"
 const GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
 
 type Props = {
-    query: UseQueryResult<IApiResponseProps<Vehicle[], Route>>
+    query: UseQueryResult<IApiResponseProps<Vehicle[], Route | Trip | Stop>>
     routeById: Map<string, Route>
+    stopById: Map<string, Stop>
+    tripById: Map<string, Trip>
     skeletonCount: number
     hasFilter: boolean
     onResetFilter: () => void
 }
 
-export default function VehicleList({ query, routeById, skeletonCount, hasFilter, onResetFilter }: Props) {
+export default function VehicleList({ query, routeById, stopById, tripById, skeletonCount, hasFilter, onResetFilter }: Props) {
     const [selected, setSelected] = useState<{ vehicle: Vehicle, route?: Route } | null>(null)
 
     // skeleton juga saat refetch, kecuali modal detail sedang terbuka
@@ -66,6 +70,8 @@ export default function VehicleList({ query, routeById, skeletonCount, hasFilter
                 {query.data.data.map((vehicle) => (
                     <li key={vehicle.id} className="flex min-w-0">
                         <VehicleCard vehicle={vehicle} route={routeById.get(vehicle.relationships.route.data?.id)}
+                            stop={vehicle.relationships.stop.data ? stopById.get(vehicle.relationships.stop.data.id) : undefined}
+                            trip={tripById.get(vehicle.relationships.trip.data?.id ?? '')}
                             onSelect={() => setSelected({ vehicle, route: routeById.get(vehicle.relationships.route.data?.id) })} />
                     </li>
                 ))}

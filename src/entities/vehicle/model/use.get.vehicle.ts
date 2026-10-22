@@ -12,5 +12,7 @@ export const useGetVehicle = (id: string) => {
             { include: 'route,trip,stop', 'fields[route]': ROUTE_FIELDS, 'fields[trip]': TRIP_FIELDS, 'fields[stop]': STOP_FIELDS },
             { signal },
         ),
+        // selalu fetch ulang saat popup dibuka, tidak memakai staleTime 30 detik dari QueryClient
+        staleTime: 0,
     });
 }

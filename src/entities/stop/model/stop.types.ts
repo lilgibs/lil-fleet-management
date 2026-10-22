@@ -1,7 +1,7 @@
 export interface Stop {
     attributes: {
         name: string
-        // null untuk halte bus
+        // null untuk pemberhentian bus
         platform_name: string | null
     }
     id: string

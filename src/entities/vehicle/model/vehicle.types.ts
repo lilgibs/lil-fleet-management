@@ -49,6 +49,7 @@ export interface Vehicle {
 export type VehicleParams = IApiRequestProps<keyof Vehicle['attributes']> & {
     'filter[route]'?: string
     'filter[trip]'?: string
+    'fields[vehicle]'?: string
     'fields[route]'?: string
     'fields[trip]'?: string
     'fields[stop]'?: string

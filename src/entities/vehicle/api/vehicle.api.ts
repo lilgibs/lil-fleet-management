@@ -8,7 +8,7 @@ import type { Vehicle, VehicleParams } from "../model/vehicle.types"
 export const getVehicles = async (
     props?: VehicleParams,
     opts?: { signal?: AbortSignal }
-): Promise<IApiResponseProps<Vehicle[], Route>> => {
+): Promise<IApiResponseProps<Vehicle[], Route | Trip | Stop>> => {
     const { data } = await api.get(`/vehicles`,
         {
             params: {

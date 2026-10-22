@@ -4,8 +4,8 @@ export interface Route {
     attributes: {
         color: string
         // diindeks dengan trip.direction_id
-        direction_destinations: string[]
-        direction_names: string[]
+        direction_destinations?: string[]
+        direction_names?: string[]
         long_name: string
         short_name: string
         text_color: string

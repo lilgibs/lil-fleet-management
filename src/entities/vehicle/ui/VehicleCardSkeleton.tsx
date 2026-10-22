@@ -13,12 +13,13 @@ export default function VehicleCardSkeleton() {
                     <div className={`h-6 w-28 ${bar}`} />
                 </div>
             </div>
+            <div className={`mt-3 h-5 w-3/4 ${bar}`} />
             <div className="mt-4 flex min-h-28 items-start gap-3 rounded-lg bg-slate-50 p-3">
-                <div className="size-8 shrink-0 rounded-md bg-slate-200" />
+                <div className="size-10 shrink-0 rounded-md bg-slate-200" />
                 <div className="flex-1 space-y-2">
                     <div className={`h-3 w-10 ${bar}`} />
                     <div className={`h-4 w-3/4 ${bar}`} />
-                    <div className={`h-3 w-1/3 ${bar}`} />
+                    <div className={`h-4 w-2/3 ${bar}`} />
                 </div>
             </div>
             <div className="my-4 grid grid-cols-2 gap-6">

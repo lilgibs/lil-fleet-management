@@ -1,28 +1,34 @@
-﻿import { ArrowUpRight, Clock } from "lucide-react"
+﻿import { ArrowUpRight, Clock, MapPin } from "lucide-react"
 import { formatDateTime } from "../../../shared/lib/format"
 import type { Route } from "../../route/model/route.types"
+import RouteBadge from "../../route/ui/RouteBadge"
+import type { Stop } from "../../stop/model/stop.types"
+import type { Trip } from "../../trip/model/trip.types"
 import type { Vehicle } from "../model/vehicle.types"
 import { formatCoordinate, getVehicleStatus, getVehicleType } from "./vehicle.presentation"
 
 type Props = {
     vehicle: Vehicle
     route?: Route
+    stop?: Stop
+    trip?: Trip
     onSelect: () => void
 }
 
-export default function VehicleCard({ vehicle, route, onSelect }: Props) {
+export default function VehicleCard({ vehicle, route, stop, trip, onSelect }: Props) {
     const { label, current_status, latitude, longitude, updated_at } = vehicle.attributes
     const name = label || vehicle.id
-    const { Icon, label: typeLabel } = getVehicleType(route?.attributes.type)
+    const { Icon, label: typeLabel, className: typeClassName } = getVehicleType(route?.attributes.type)
     const status = getVehicleStatus(current_status)
     const routeId = vehicle.relationships.route.data?.id
-    const tripId = vehicle.relationships.trip.data?.id
+    const destination = trip?.attributes.headsign?.trim()
+    const stopName = stop?.attributes.name?.trim()
     const routeName = route?.attributes.long_name || route?.attributes.short_name || (routeId ? `Rute ${routeId}` : "Rute belum tersedia")
 
     return (
         <article className="flex h-full w-full min-w-0 flex-col rounded-xl border border-slate-200 bg-white p-5 transition-[border-color,box-shadow] duration-200 hover:border-accent/30 hover:shadow-md motion-reduce:transition-none">
             <div className="flex items-start gap-3">
-                <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent">
+                <div className={`grid size-12 shrink-0 place-items-center rounded-xl ${typeClassName}`}>
                     <Icon aria-hidden className="size-6" strokeWidth={1.6} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -37,21 +43,20 @@ export default function VehicleCard({ vehicle, route, onSelect }: Props) {
                 </div>
             </div>
 
+            <p title={`${status.stopLabel}: ${stopName || 'Belum tersedia'}`} className="mt-3 flex items-start gap-1.5 text-xs leading-5 text-slate-600">
+                <MapPin aria-hidden className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
+                <span className="min-w-0 line-clamp-2 wrap-anywhere">
+                    {status.stopLabel}: <span className="font-medium text-slate-700">{stopName || "Belum tersedia"}</span>
+                </span>
+            </p>
+
             <div className="mt-4 flex min-h-28 items-start gap-3 rounded-lg bg-slate-50 p-3">
-                {route?.attributes.short_name ? (
-                    <span className="mt-0.5 grid min-h-8 min-w-8 shrink-0 place-items-center rounded-md px-1.5 text-xs font-bold"
-                        style={{ backgroundColor: `#${route.attributes.color}`, color: `#${route.attributes.text_color}` }}>
-                        {route.attributes.short_name}
-                    </span>
-                ) : (
-                    <span aria-hidden className="mt-1.5 h-8 w-1 shrink-0 rounded-full bg-slate-300"
-                        style={route ? { backgroundColor: `#${route.attributes.color}` } : undefined} />
-                )}
+                <RouteBadge route={route} />
                 <div className="min-w-0 flex-1">
                     <p className="text-[11px] font-medium text-slate-500">Rute</p>
                     <p title={routeName} className="mt-0.5 line-clamp-2 text-sm leading-5 font-semibold wrap-anywhere">{routeName}</p>
-                    <p title={tripId ? `Trip ${tripId}` : undefined} className="mt-1 truncate text-xs text-slate-500">
-                        {tripId ? `Trip ${tripId}` : "Trip belum tersedia"}
+                    <p title={destination} className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600 wrap-anywhere">
+                        <span className="font-medium text-accent">Tujuan </span>{destination || "belum tersedia"}
                     </p>
                 </div>
             </div>

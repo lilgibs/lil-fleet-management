@@ -1,9 +1,10 @@
-import { Clock, ExternalLink, MapPin, RefreshCw, Route as RouteIcon } from "lucide-react"
+import { ExternalLink, MapPin, RefreshCw, Route as RouteIcon } from "lucide-react"
 import { formatDateTime } from "../../../shared/lib/format"
 import Button from "../../../shared/ui/Button"
 import LocationMap from "../../../shared/ui/LocationMap"
 import Modal from "../../../shared/ui/Modal"
 import type { Route } from "../../route/model/route.types"
+import RouteBadge from "../../route/ui/RouteBadge"
 import type { Stop } from "../../stop/model/stop.types"
 import type { Trip } from "../../trip/model/trip.types"
 import { useGetVehicle } from "../model/use.get.vehicle"
@@ -29,12 +30,12 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
 
     const { label, current_status, latitude, longitude, current_stop_sequence, updated_at } = vehicle.attributes
     const name = label || vehicle.id
-    const { Icon, label: typeLabel } = getVehicleType(route?.attributes.type)
+    const { Icon, label: typeLabel, className: typeClassName } = getVehicleType(route?.attributes.type)
     const status = getVehicleStatus(current_status)
     const routeId = vehicle.relationships.route.data?.id
     const tripId = vehicle.relationships.trip.data?.id
-    const direction = trip ? route?.attributes.direction_names[trip.attributes.direction_id] : undefined
-    const destination = trip ? route?.attributes.direction_destinations[trip.attributes.direction_id] : undefined
+    const direction = trip ? route?.attributes.direction_names?.[trip.attributes.direction_id] : undefined
+    const destination = trip ? route?.attributes.direction_destinations?.[trip.attributes.direction_id] : undefined
     const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
     const isRefreshing = detail.isFetching && !detail.isPending
 
@@ -50,22 +51,25 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
     )
 
     return (
-        <Modal title="Detail armada" onClose={onClose} actions={refreshButton}>
+        <Modal title="Detail armada" onClose={onClose} actions={refreshButton}
+            description={<>Update terakhir <time dateTime={updated_at} className="font-medium text-slate-600">{formatDateTime(updated_at)}</time></>}>
             <p role="status" className="sr-only">
                 {detail.isPending ? "Memuat detail armada…" : isRefreshing ? "Memperbarui detail armada…" : ""}
             </p>
             <div className="space-y-6 p-5 sm:p-6">
                 <div className="flex items-start gap-4">
-                    <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent">
+                    <div className={`grid size-14 shrink-0 place-items-center rounded-xl ${typeClassName}`}>
                         <Icon aria-hidden className="size-7" strokeWidth={1.6} />
                     </div>
-                    <div className="min-w-0">
-                        <p className="text-xs font-medium text-slate-500">{typeLabel}</p>
+                    <div className="min-w-0 flex-1">
+                        <div className="flex min-h-6 flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                            <p className="text-xs font-medium text-slate-500">{typeLabel}</p>
+                            <p title={current_status} className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}>
+                                <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-current" />
+                                {status.label}
+                            </p>
+                        </div>
                         <h3 className="mt-1 text-2xl leading-tight font-bold tracking-tight wrap-anywhere">{name}</h3>
-                        <p title={current_status} className={`mt-3 inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}>
-                            <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-current" />
-                            {status.label}{stop && ` ${stop.attributes.name}`}
-                        </p>
                     </div>
                 </div>
 
@@ -94,11 +98,10 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
                                 <RouteIcon aria-hidden className="size-4 text-slate-400" /> Perjalanan
                             </h3>
                             <div className="mt-3 flex items-start gap-3 rounded-xl border border-slate-200 p-4">
-                                <span aria-hidden className="mt-1 h-10 w-1 shrink-0 rounded-full bg-slate-300"
-                                    style={route ? { backgroundColor: `#${route.attributes.color}` } : undefined} />
+                                <RouteBadge route={route} />
                                 <div className="min-w-0">
-                                    <p className="text-[11px] text-slate-500">Rute {route?.attributes.short_name || routeId || "belum tersedia"}</p>
-                                    <p className="mt-1 text-sm leading-6 font-semibold wrap-anywhere">{route?.attributes.long_name || route?.attributes.short_name || "Nama rute belum tersedia"}</p>
+                                    <p className="text-[11px] text-slate-500">Rute</p>
+                                    <p className="mt-1 text-sm leading-6 font-semibold wrap-anywhere">{route?.attributes.long_name || route?.attributes.short_name || (routeId ? `Rute ${routeId}` : "Nama rute belum tersedia")}</p>
                                     {trip && <p className="mt-0.5 text-sm text-slate-600">Tujuan {trip.attributes.headsign}</p>}
                                 </div>
                             </div>
@@ -107,8 +110,8 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
                                 <Detail label="Nama trip" value={trip?.attributes.name} />
                                 <Detail label="Arah" value={direction && (destination ? `${direction} · ${destination}` : direction)} />
                                 <Detail label="Akses kursi roda" value={trip && (WHEELCHAIR[trip.attributes.wheelchair_accessible] ?? "Tidak ada info")} />
-                                <Detail label="Halte" value={stop && (stop.attributes.platform_name ? `${stop.attributes.name} (${stop.attributes.platform_name})` : stop.attributes.name)} />
-                                <Detail label="Urutan halte" value={current_stop_sequence} />
+                                <Detail label={status.stopLabel} value={stop && (stop.attributes.platform_name ? `${stop.attributes.name} (${stop.attributes.platform_name})` : stop.attributes.name)} />
+                                <Detail label="Urutan pemberhentian" value={current_stop_sequence} />
                                 <Detail label="ID armada" value={vehicle.id} />
                             </dl>
                         </section>
@@ -137,10 +140,6 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
                     </>
                 )}
 
-                <div className="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-3 text-xs leading-5 text-slate-500">
-                    <Clock aria-hidden className="mt-0.5 size-4 shrink-0" />
-                    <p>Update terakhir <time dateTime={updated_at} className="font-medium text-slate-700">{formatDateTime(updated_at)}</time><br />Sumber data: MBTA V3 API</p>
-                </div>
             </div>
         </Modal>
     )

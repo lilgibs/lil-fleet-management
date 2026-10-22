@@ -7,7 +7,7 @@ import VehicleFilter from "./VehicleFilter"
 import VehicleList from "./VehicleList"
 
 export default function Fleet() {
-    const { vehicles, routeById, filters, pagination, setRoutes, setTrips, setPage, setLimit, refreshVehicles, isRefreshing } = useFleetViewModel()
+    const { vehicles, routeById, stopById, tripById, filters, pagination, setRoutes, setTrips, setPage, setLimit, refreshVehicles, isRefreshing } = useFleetViewModel()
     const goToPage = (page: number) => {
         setPage(page)
         window.scrollTo({ top: 0 })
@@ -54,6 +54,8 @@ export default function Fleet() {
                     <VehicleList
                         query={vehicles}
                         routeById={routeById}
+                        stopById={stopById}
+                        tripById={tripById}
                         skeletonCount={pagination.limit}
                         hasFilter={filters.routes.length > 0}
                         onResetFilter={() => setRoutes([])}

@@ -4,10 +4,10 @@ Aplikasi frontend untuk memantau armada kendaraan secara real-time, memakai data
 
 ## Fitur
 
-- **Daftar kendaraan** dalam bentuk card: label, status, latitude/longitude, dan waktu update terakhir.
+- **Daftar kendaraan** dalam bentuk card: label, status, nama pemberhentian, tujuan perjalanan, latitude/longitude, dan waktu update terakhir.
 - **Pagination**: rentang data yang tampil, pilihan 6/12/24 per halaman, jumlah halaman, dan tombol pindah halaman.
 - **Filter Rute dan Trip**: dropdown multi-pilih dengan infinite scroll. Daftar trip mengikuti rute yang dipilih.
-- **Popup detail**: data rute, trip (tujuan, arah, akses kursi roda), halte saat ini, dan posisi kendaraan di peta (Leaflet + OpenStreetMap).
+- **Popup detail**: data rute, trip (tujuan, arah, akses kursi roda), pemberhentian terkait, dan posisi kendaraan di peta (Leaflet + OpenStreetMap).
 - **Loading dan error** di halaman, dropdown, dan popup: skeleton saat memuat, pesan error berbahasa Indonesia dengan tombol "Coba lagi".
 - Tombol **Perbarui** untuk mengambil ulang posisi kendaraan.
 
@@ -75,7 +75,7 @@ Alur data halaman: `Fleet` (UI) → `useFleetViewModel` → `useGetVehicles` (Re
 - Semua request lewat satu instance axios di `shared/api`. Interceptor-nya mengubah error (timeout, offline, 404, 429, 5xx) menjadi pesan yang mudah dipahami.
 - `useQuery` dipakai untuk daftar dan detail kendaraan. `useInfiniteQuery` dipakai untuk dropdown rute dan trip (50 per halaman, halaman berikutnya dari `links.next`, dimuat lewat `IntersectionObserver`).
 - Parameter JSON:API dipakai supaya request sedikit dan kecil:
-  - `include=route` di daftar kendaraan: nama, warna, dan jenis rute ikut di respons yang sama.
+  - `include=route,trip,stop` di daftar kendaraan: rute (nama, warna, jenis), tujuan perjalanan, dan nama pemberhentian sesuai status armada ikut di respons yang sama.
   - `include=route,trip,stop` di popup detail: satu request untuk semua data detail.
   - `fields[...]` hanya meminta atribut yang dipakai.
 - Data dropdown baru diambil saat dropdown dibuka. Daftar rute dan trip di-cache selama sesi.
