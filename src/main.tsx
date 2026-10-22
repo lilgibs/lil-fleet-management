@@ -5,15 +5,15 @@ import './index.css'
 
 import Fleet from './fleet/ui/Fleet.tsx'
 
-// retry 1: MBTA tanpa API key cuma 20 request/menit
+// MBTA tanpa API key cuma 20 request/menit
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1 } },
+  defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
 })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <Fleet />
-    </QueryClientProvider>
+    </QueryClientProvider>  
   </StrictMode>,
 )
