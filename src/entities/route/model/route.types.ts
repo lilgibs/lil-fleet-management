@@ -18,6 +18,6 @@ export interface Route {
 
 export const ROUTE_FIELDS = 'short_name,long_name,color,text_color,type,direction_names,direction_destinations'
 
-export type RouteParams = IApiRequestProps<keyof Route['attributes']> & {
+export type RouteParams = IApiRequestProps & {
     'fields[route]'?: string
 }

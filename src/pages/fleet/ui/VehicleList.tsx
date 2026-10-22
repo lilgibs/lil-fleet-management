@@ -16,6 +16,8 @@ const VehicleDetailModal = lazy(() => import("../../../entities/vehicle/ui/Vehic
 // grid-cols-1 (minmax(0, 1fr)) supaya teks panjang tidak melebarkan kolom
 const GRID = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
 
+const related = <T,>(map: Map<string, T>, ref: { id: string } | null) => (ref ? map.get(ref.id) : undefined)
+
 type Props = {
     query: UseQueryResult<IApiResponseProps<Vehicle[], Route | Trip | Stop>>
     routeById: Map<string, Route>
@@ -70,14 +72,17 @@ export default function VehicleList({ query, routeById, stopById, tripById, skel
     return (
         <>
             <ul className={GRID}>
-                {query.data.data.map((vehicle) => (
-                    <li key={vehicle.id} className="flex min-w-0">
-                        <VehicleCard vehicle={vehicle} route={routeById.get(vehicle.relationships.route.data?.id)}
-                            stop={vehicle.relationships.stop.data ? stopById.get(vehicle.relationships.stop.data.id) : undefined}
-                            trip={tripById.get(vehicle.relationships.trip.data?.id ?? '')}
-                            onSelect={() => setSelected({ vehicle, route: routeById.get(vehicle.relationships.route.data?.id) })} />
-                    </li>
-                ))}
+                {query.data.data.map((vehicle) => {
+                    const route = related(routeById, vehicle.relationships.route.data)
+                    return (
+                        <li key={vehicle.id} className="flex min-w-0">
+                            <VehicleCard vehicle={vehicle} route={route}
+                                stop={related(stopById, vehicle.relationships.stop.data)}
+                                trip={related(tripById, vehicle.relationships.trip.data)}
+                                onSelect={() => setSelected({ vehicle, route })} />
+                        </li>
+                    )
+                })}
             </ul>
             {selected && (
                 <Suspense fallback={

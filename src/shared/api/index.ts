@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { config } from '../config';
 import { getErrorMessage } from './error';
 
 export const api = axios.create({
-  baseURL: config.apiBaseUrl,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15_000,
 });
 

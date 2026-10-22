@@ -14,7 +14,7 @@ export interface Trip {
 
 export const TRIP_FIELDS = 'headsign,name,direction_id,wheelchair_accessible'
 
-export type TripParams = IApiRequestProps<keyof Trip['attributes']> & {
+export type TripParams = IApiRequestProps & {
     // wajib, /trips menolak request tanpa filter
     'filter[route]': string
     'fields[trip]'?: string

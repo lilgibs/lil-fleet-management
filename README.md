@@ -28,7 +28,7 @@ npm run preview   # menjalankan hasil build
 npm run lint
 ```
 
-Tidak perlu API key. `VITE_API_BASE_URL` sudah diisi di `.env.development` dan `.env.production`.
+Tidak perlu API key. `VITE_API_BASE_URL` sudah diisi di `.env`.
 
 > **Batas request.** Tanpa API key, MBTA membatasi 20 request per menit per IP. Kalau muncul pesan "Terlalu banyak permintaan ke server", tunggu sekitar satu menit.
 >

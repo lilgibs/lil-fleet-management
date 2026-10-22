@@ -1,9 +1,7 @@
 
-export interface IApiRequestProps<F extends string = string> {
+export interface IApiRequestProps {
   'page[offset]'?: number;
   'page[limit]'?: number;
-  // ascending: "bearing", descending: "-bearing"
-  sort?: F | `-${F}`;
   include?: string;
 }
 
