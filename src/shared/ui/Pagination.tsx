@@ -17,7 +17,7 @@ export default function Pagination({ page, totalPages, limit, limitOptions, disa
 
     return (
         <nav aria-label="Navigasi halaman kendaraan" aria-busy={disabled}
-            className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4 xl:flex-row xl:items-center xl:justify-between">
+            className="flex min-w-0 flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-2 sm:gap-4 sm:p-4 xl:flex-row xl:items-center xl:justify-between">
             <label className="flex w-fit items-center gap-2 text-xs text-slate-500">
                 Tampilkan
                 <span className="relative">
@@ -31,16 +31,40 @@ export default function Pagination({ page, totalPages, limit, limitOptions, disa
                 per halaman
             </label>
 
-            <div className="flex items-center justify-between gap-2 border-t border-slate-200 pt-4 sm:justify-end xl:border-t-0 xl:pt-0">
+            <div className="flex items-center justify-between gap-0.5 border-t border-slate-200 pt-3 sm:hidden">
+                <Button square aria-label="Halaman sebelumnya" disabled={disabled || page <= 1}
+                    onClick={() => onPageChange(page - 1)} className="max-w-7 shrink-0">
+                    <ChevronLeft aria-hidden className="size-4" />
+                </Button>
+                {totalPages !== undefined && (
+                    <ul className="flex items-center justify-center">
+                        {getPageItems(page, totalPages, true).map((item, index) => item === "gap" ? (
+                            <li key={`gap-${index}`} aria-hidden className="w-5 shrink-0 text-center text-sm text-slate-400">…</li>
+                        ) : (
+                            <li key={item}>
+                                <Button square disabled={disabled} variant={item === page ? "primary" : "ghost"}
+                                    aria-current={item === page ? "page" : undefined} aria-label={`Halaman ${item}`}
+                                    onClick={() => onPageChange(item)}
+                                    className={`max-w-8 text-xs tabular-nums ${item === page ? 'shadow-sm' : 'text-slate-600 hover:bg-slate-200/60 hover:no-underline'}`}>
+                                    {number(item)}
+                                </Button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                <Button square aria-label="Halaman berikutnya" disabled={disabled || totalPages === undefined || page >= totalPages}
+                    onClick={() => onPageChange(page + 1)} className="max-w-7 shrink-0">
+                    <ChevronRight aria-hidden className="size-4" />
+                </Button>
+            </div>
+
+            <div className="hidden items-center justify-end gap-2 border-t border-slate-200 pt-4 sm:flex xl:border-t-0 xl:pt-0">
                 <Button square aria-label="Halaman sebelumnya" disabled={disabled || page <= 1} onClick={() => onPageChange(page - 1)}
                     className="shrink-0 xl:w-auto xl:gap-2 xl:px-3">
                     <ChevronLeft aria-hidden className="size-4" />
                     <span className="hidden xl:inline">Sebelumnya</span>
                 </Button>
 
-                <span aria-current="page" className="text-center text-xs text-slate-500 tabular-nums sm:hidden">
-                    Halaman <span className="font-semibold text-slate-900">{number(page)}</span> dari {totalPages === undefined ? '…' : number(totalPages)}
-                </span>
                 {totalPages !== undefined ? (
                     <ul className="hidden items-center gap-1 sm:flex">
                         {getPageItems(page, totalPages).map((item, index) => item === "gap" ? (
