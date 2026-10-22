@@ -1,5 +1,5 @@
 import { ChevronDown, LoaderCircle, X } from "lucide-react"
-import { useEffect, useId, useRef, type ReactNode } from "react"
+import { useEffect, useId, useRef, useState, type ReactNode } from "react"
 import Button from "./Button"
 
 type Option = { value: string, label: string, hint?: string }
@@ -32,6 +32,8 @@ export default function InfiniteMultiSelect({
     const triggerRef = useRef<HTMLButtonElement>(null)
     const listRef = useRef<HTMLUListElement>(null)
     const sentinelRef = useRef<HTMLLIElement>(null)
+    // diambil saat dropdown dibuka, supaya item tidak pindah tempat saat dicentang
+    const [pinned, setPinned] = useState<string[]>([])
 
     useEffect(() => {
         if (!open) return
@@ -71,6 +73,24 @@ export default function InfiniteMultiSelect({
         ? disabledHint
         : selected.length ? `${label} (${selected.length})` : `Semua ${label.toLowerCase()}`
 
+    const pinnedOptions = pinned.flatMap((value) => options.filter((option) => option.value === value))
+    const restOptions = options.filter((option) => !pinned.includes(option.value))
+
+    const renderOption = (option: Option) => (
+        <li key={option.value}>
+            <label className="flex min-h-11 cursor-pointer items-center gap-3 px-3 py-2 hover:bg-slate-50">
+                <input
+                    type="checkbox"
+                    checked={selected.includes(option.value)}
+                    onChange={() => toggle(option.value)}
+                    className="size-4 shrink-0 accent-accent"
+                />
+                <span className="min-w-0 flex-1">{option.label}</span>
+                {option.hint && <span className="max-w-24 shrink-0 truncate text-xs text-slate-500">{option.hint}</span>}
+            </label>
+        </li>
+    )
+
     return (
         <div ref={rootRef} className="relative w-full min-w-0">
             <p id={`${listId}-label`} className="mb-2 text-xs font-medium text-slate-600">{label}</p>
@@ -81,7 +101,10 @@ export default function InfiniteMultiSelect({
                 aria-expanded={open}
                 aria-controls={listId}
                 aria-labelledby={`${listId}-label ${listId}-value`}
-                onClick={() => onOpenChange(!open)}
+                onClick={() => {
+                    if (!open) setPinned(selected)
+                    onOpenChange(!open)
+                }}
                 className="flex min-h-11 w-full items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-3 text-left text-sm transition-colors hover:border-slate-400 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100/70 disabled:text-slate-500 motion-reduce:transition-none"
             >
                 <span className="shrink-0 text-slate-500">{icon}</span>
@@ -105,20 +128,14 @@ export default function InfiniteMultiSelect({
                                 <LoaderCircle aria-hidden className="size-4 animate-spin" /> Memuat {label.toLowerCase()}…
                             </li>
                         )}
-                        {options.map((option) => (
-                            <li key={option.value}>
-                                <label className="flex min-h-11 cursor-pointer items-center gap-3 px-3 py-2 hover:bg-slate-50">
-                                    <input
-                                        type="checkbox"
-                                        checked={selected.includes(option.value)}
-                                        onChange={() => toggle(option.value)}
-                                        className="size-4 shrink-0 accent-accent"
-                                    />
-                                    <span className="min-w-0 flex-1">{option.label}</span>
-                                    {option.hint && <span className="max-w-24 shrink-0 truncate text-xs text-slate-500">{option.hint}</span>}
-                                </label>
-                            </li>
-                        ))}
+                        {pinnedOptions.length > 0 && (
+                            <>
+                                <li aria-hidden className="px-3 pt-2 pb-1 text-xs font-medium text-slate-500">Dipilih</li>
+                                {pinnedOptions.map(renderOption)}
+                                {restOptions.length > 0 && <li aria-hidden className="mx-3 my-1 border-t border-slate-200" />}
+                            </>
+                        )}
+                        {restOptions.map(renderOption)}
                         {!isPending && !error && options.length === 0 && (
                             <li className="px-3 py-3 text-slate-600">{emptyText}</li>
                         )}
