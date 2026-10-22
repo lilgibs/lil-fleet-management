@@ -4,11 +4,10 @@ export interface IApiRequestProps<F extends string = string> {
   'page[limit]'?: number;
   // ascending: "bearing", descending: "-bearing"
   sort?: F | `-${F}`;
-  // contoh: "route,trip,stop"
   include?: string;
 }
 
-// I = tipe resource di `included` (hasil param include)
+// I: tipe item di `included`
 export interface IApiResponseProps<T, I = never> {
   data: T;
   included?: I[];
