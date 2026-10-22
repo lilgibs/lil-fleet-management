@@ -3,6 +3,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { ROUTE_FIELDS, type Route } from "../../../entities/route/model/route.types";
 import { useGetVehicles } from "../../../entities/vehicle/model/use.get.vehicles";
 import { getOffset } from "../../../shared/api";
+import { useDebouncedValue } from "../../../shared/lib/useDebouncedValue";
 
 // kelipatan 3, mengikuti grid 3 kolom
 const LIMIT_OPTIONS = [6, 12, 24]
@@ -36,10 +37,14 @@ export default function useFleetViewModel() {
         setValue('page', 1)
     }
 
+    // 800ms karena jeda antar-centang lebih lama dari jeda mengetik
+    const routeIds = useDebouncedValue(routes.join(','), 800)
+    const tripIds = useDebouncedValue(trips.join(','), 800)
+
     // MBTA mengabaikan filter[route] kalau filter[trip] ikut dikirim
-    const filter = trips.length
-        ? { 'filter[trip]': trips.join(',') }
-        : { 'filter[route]': routes.join(',') || undefined }
+    const filter = tripIds
+        ? { 'filter[trip]': tripIds }
+        : { 'filter[route]': routeIds || undefined }
     const offset = (page - 1) * limit
 
     const params = { ...filter, 'page[limit]': limit, include: 'route', 'fields[route]': ROUTE_FIELDS }
