@@ -1,6 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
+import { ROUTE_FIELDS, type Route } from "../../../entities/route/model/route.types";
 import { useGetVehicles } from "../../../entities/vehicle/model/use.get.vehicles";
 import { getOffset } from "../../../shared/api";
+
+// kelipatan 3, mengikuti grid 3 kolom
+const LIMIT_OPTIONS = [6, 12, 24]
 
 type FleetForm = {
     page: number
@@ -10,12 +15,12 @@ type FleetForm = {
 }
 
 export default function useFleetViewModel() {
+    const queryClient = useQueryClient()
     const { control, setValue } = useForm<FleetForm>({
-        defaultValues: { page: 1, limit: 5, routes: [], trips: [] }
+        defaultValues: { page: 1, limit: LIMIT_OPTIONS[0], routes: [], trips: [] }
     })
     const [page, limit, routes, trips] = useWatch({ control, name: ['page', 'limit', 'routes', 'trips'] })
 
-    // Ganti filter / jumlah per halaman selalu kembali ke halaman 1. Rute berubah: trip lama dibuang
     const setPage = (value: number) => setValue('page', value)
     const setLimit = (value: number) => {
         setValue('limit', value)
@@ -31,34 +36,43 @@ export default function useFleetViewModel() {
         setValue('page', 1)
     }
 
-    // Kalau filter[trip] ada, API mengabaikan filter[route], jadi kirim salah satu saja
+    // MBTA mengabaikan filter[route] kalau filter[trip] ikut dikirim
     const filter = trips.length
         ? { 'filter[trip]': trips.join(',') }
         : { 'filter[route]': routes.join(',') || undefined }
     const offset = (page - 1) * limit
 
-    const vehicles = useGetVehicles({ ...filter, 'page[offset]': offset, 'page[limit]': limit })
+    const params = { ...filter, 'page[limit]': limit, include: 'route', 'fields[route]': ROUTE_FIELDS }
+    // data sebelumnya dipertahankan hanya saat pindah halaman, bukan saat filter/limit berubah
+    const withoutOffset = (key: unknown) => JSON.stringify({ ...(key as object), 'page[offset]': undefined })
+    const vehicles = useGetVehicles({ ...params, 'page[offset]': offset }, {
+        placeholderData: (previous, previousQuery) =>
+            withoutOffset(previousQuery?.queryKey[1]) === withoutOffset(params) ? previous : undefined,
+    })
+    const routeById = new Map<string, Route>(vehicles.data?.included?.map((route) => [route.id, route]))
 
-    // MBTA tidak mengirim total data, jadi total = offset halaman terakhir (links.last) + isi
-    // halaman terakhir. Saat sedang di halaman terakhir, query-nya sama dengan query utama
-    // jadi tidak ada request tambahan. Hasil kosong tidak punya `links`, jadi halaman ini
-    // dianggap yang terakhir
+    // MBTA tidak mengirim total, jadi dihitung dari halaman terakhir (links.last).
+    // Respons kosong tidak punya links, anggap halaman ini yang terakhir
     const lastOffset = vehicles.data ? (getOffset(vehicles.data.links?.last) ?? offset) : undefined
     const lastPage = useGetVehicles(
-        { ...filter, 'page[offset]': lastOffset, 'page[limit]': limit },
+        { ...params, 'page[offset]': lastOffset },
         { enabled: lastOffset !== undefined },
     )
 
     return {
         vehicles,
+        routeById,
         filters: { routes, trips },
         setRoutes,
         setTrips,
         setPage,
         setLimit,
+        refreshVehicles: () => queryClient.invalidateQueries({ queryKey: ['vehicles'] }),
+        isRefreshing: vehicles.isFetching || lastPage.isFetching,
         pagination: {
             page,
             limit,
+            limitOptions: LIMIT_OPTIONS,
             totalPages: lastOffset === undefined ? undefined : lastOffset / limit + 1,
             from: offset + 1,
             to: offset + (vehicles.data?.data.length ?? 0),
