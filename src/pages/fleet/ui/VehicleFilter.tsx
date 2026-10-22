@@ -30,7 +30,7 @@ export default function VehicleFilter({ routes, trips, onRoutesChange, onTripsCh
     })) ?? []
 
     return (
-        <section aria-label="Filter kendaraan" className="grid items-end gap-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+        <section aria-label="Filter armada" className="grid items-end gap-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
             <InfiniteMultiSelect
                 label="Rute"
                 icon={<RouteIcon aria-hidden className="size-4" />}

@@ -39,7 +39,7 @@ export default function Modal({ title, onClose, actions, children }: Props) {
                 <h2 id={titleId} className="text-sm font-semibold">{title}</h2>
                 <div className="-mr-2 flex shrink-0 items-center gap-1">
                     {actions}
-                    <button type="button" onClick={onClose} aria-label="Tutup detail kendaraan"
+                    <button type="button" onClick={onClose} aria-label="Tutup detail armada"
                         className="grid size-11 shrink-0 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">
                         <X aria-hidden className="size-5" />
                     </button>

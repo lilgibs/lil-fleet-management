@@ -16,12 +16,12 @@ export default function Pagination({ page, totalPages, limit, limitOptions, disa
     const number = (value: number) => value.toLocaleString('id-ID')
 
     return (
-        <nav aria-label="Navigasi halaman kendaraan" aria-busy={disabled}
+        <nav aria-label="Navigasi halaman armada" aria-busy={disabled}
             className="flex min-w-0 flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-2 sm:gap-4 sm:p-4 xl:flex-row xl:items-center xl:justify-between">
             <label className="flex w-fit items-center gap-2 text-xs text-slate-500">
                 Tampilkan
                 <span className="relative">
-                    <select value={limit} disabled={disabled} aria-label="Jumlah kendaraan per halaman"
+                    <select value={limit} disabled={disabled} aria-label="Jumlah armada per halaman"
                         onChange={(event) => onLimitChange(Number(event.target.value))}
                         className="min-h-11 min-w-17 appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-3 text-sm font-medium text-slate-700 tabular-nums hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-50">
                         {limitOptions.map((option) => <option key={option} value={option}>{option}</option>)}

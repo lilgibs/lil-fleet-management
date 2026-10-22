@@ -26,7 +26,7 @@ export default function VehicleList({ query, routeById, skeletonCount, hasFilter
     if (query.isPending || ((query.isFetching || query.isPlaceholderData) && !selected)) {
         return (
             <div>
-                <p role="status" className="sr-only">Memuat kendaraan…</p>
+                <p role="status" className="sr-only">Memuat armada…</p>
                 <ul aria-busy className={GRID}>
                     {Array.from({ length: skeletonCount }, (_, index) => (
                         <li key={index} className="flex"><VehicleCardSkeleton /></li>
@@ -39,7 +39,7 @@ export default function VehicleList({ query, routeById, skeletonCount, hasFilter
     if (query.isError) {
         return (
             <div role="alert" className="py-16 text-center">
-                <p className="font-medium">Data kendaraan gagal dimuat.</p>
+                <p className="font-medium">Data armada gagal dimuat.</p>
                 <p className="mt-1 text-sm text-slate-600">{query.error.message}</p>
                 <Button variant="primary" className="mt-4" onClick={() => query.refetch()}>Coba lagi</Button>
             </div>
@@ -49,11 +49,11 @@ export default function VehicleList({ query, routeById, skeletonCount, hasFilter
     if (query.data.data.length === 0) {
         return (
             <div className="py-16 text-center">
-                <p className="font-medium">Tidak ada kendaraan yang cocok.</p>
+                <p className="font-medium">Tidak ada armada yang cocok.</p>
                 <p className="mt-1 text-sm text-slate-600">
                     {hasFilter
                         ? "Rute atau trip yang dipilih mungkin sedang tidak beroperasi."
-                        : "Belum ada kendaraan yang beroperasi saat ini."}
+                        : "Belum ada armada yang beroperasi saat ini."}
                 </p>
                 {hasFilter && <Button className="mt-4" onClick={onResetFilter}>Reset filter</Button>}
             </div>

@@ -24,7 +24,7 @@ export default function Fleet() {
                     <h1 className="text-3xl font-bold tracking-tight">Armada</h1>
                     <p className="mt-2 text-sm leading-6 text-slate-500">Pantau posisi, rute, dan status terkini armada MBTA.</p>
                 </div>
-                <Button onClick={refreshVehicles} disabled={isRefreshing} aria-label="Perbarui data kendaraan" className="shrink-0 self-start gap-2 rounded-lg border-slate-200 sm:self-auto">
+                <Button onClick={refreshVehicles} disabled={isRefreshing} aria-label="Perbarui data armada" className="shrink-0 self-start gap-2 rounded-lg border-slate-200 sm:self-auto">
                     <RefreshCw aria-hidden className={`size-4 ${isRefreshing ? 'motion-safe:animate-spin' : ''}`} />
                     Perbarui
                 </Button>
@@ -45,7 +45,7 @@ export default function Fleet() {
                                 </span>
                                 {vehicles.data.data.length > 0 && pagination.total !== undefined && (
                                     <> dari <span className="font-semibold text-slate-900 tabular-nums">{pagination.total.toLocaleString('id-ID')}</span></>
-                                )} kendaraan
+                                )} armada
                             </p>
                         ) : vehicles.isPending || vehicles.isFetching ? (
                             <div aria-hidden className="h-5 w-56 max-w-full rounded bg-slate-100 motion-safe:animate-pulse" />

@@ -40,7 +40,7 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
 
     // aria-disabled, bukan disabled, supaya fokus keyboard tidak hilang saat refresh
     const refreshButton = (
-        <button type="button" aria-label="Perbarui detail kendaraan" aria-disabled={detail.isFetching}
+        <button type="button" aria-label="Perbarui detail armada" aria-disabled={detail.isFetching}
             onClick={() => { if (!detail.isFetching) detail.refetch() }}
             className="group grid size-11 shrink-0 place-items-center rounded-lg text-slate-500 aria-disabled:cursor-wait aria-disabled:opacity-60">
             <span className="grid size-8 place-items-center rounded-md group-hover:bg-slate-100 group-hover:text-slate-900">
@@ -50,9 +50,9 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
     )
 
     return (
-        <Modal title="Detail kendaraan" onClose={onClose} actions={refreshButton}>
+        <Modal title="Detail armada" onClose={onClose} actions={refreshButton}>
             <p role="status" className="sr-only">
-                {detail.isPending ? "Memuat detail kendaraan…" : isRefreshing ? "Memperbarui detail kendaraan…" : ""}
+                {detail.isPending ? "Memuat detail armada…" : isRefreshing ? "Memperbarui detail armada…" : ""}
             </p>
             <div className="space-y-6 p-5 sm:p-6">
                 <div className="flex items-start gap-4">
@@ -81,7 +81,7 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
 
                 {detail.isError && !detail.isFetching && (
                     <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm">
-                        <p className="font-medium text-red-800">{detail.data ? "Detail kendaraan gagal diperbarui." : "Detail kendaraan gagal dimuat."}</p>
+                        <p className="font-medium text-red-800">{detail.data ? "Detail armada gagal diperbarui." : "Detail armada gagal dimuat."}</p>
                         <p className="mt-1 text-red-700">{detail.error.message}</p>
                         <Button variant="primary" className="mt-3" onClick={() => detail.refetch()}>Coba lagi</Button>
                     </div>
@@ -109,7 +109,7 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
                                 <Detail label="Akses kursi roda" value={trip && (WHEELCHAIR[trip.attributes.wheelchair_accessible] ?? "Tidak ada info")} />
                                 <Detail label="Halte" value={stop && (stop.attributes.platform_name ? `${stop.attributes.name} (${stop.attributes.platform_name})` : stop.attributes.name)} />
                                 <Detail label="Urutan halte" value={current_stop_sequence} />
-                                <Detail label="ID kendaraan" value={vehicle.id} />
+                                <Detail label="ID armada" value={vehicle.id} />
                             </dl>
                         </section>
 
@@ -124,7 +124,7 @@ export default function VehicleDetailModal({ vehicle: listVehicle, route: listRo
                             {hasCoordinates && (
                                 <>
                                     <div className="mt-3">
-                                        <LocationMap latitude={latitude} longitude={longitude} label={`kendaraan ${name}`} />
+                                        <LocationMap latitude={latitude} longitude={longitude} label={`armada ${name}`} />
                                     </div>
                                     <a href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`} target="_blank" rel="noreferrer"
                                         className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-accent underline-offset-4 hover:underline">

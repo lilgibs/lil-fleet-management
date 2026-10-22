@@ -15,7 +15,7 @@ const STATUSES: Record<string, { label: string, className: string }> = {
 }
 
 export const getVehicleType = (type?: number) =>
-    VEHICLE_TYPES[type ?? -1] ?? { label: "Kendaraan", Icon: MapPin }
+    VEHICLE_TYPES[type ?? -1] ?? { label: "Armada", Icon: MapPin }
 
 export const getVehicleStatus = (status: string) =>
     STATUSES[status] ?? { label: status, className: "bg-slate-100 text-slate-600" }
